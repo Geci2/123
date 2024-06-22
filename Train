@@ -1,0 +1,71 @@
+package EXAM;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class TrainStation {
+    private String name;
+    private int capacity;
+    private int railGauge;
+    private List<Locomotive> locomotives;
+
+    public TrainStation(String name, int capacity, int railGauge) {
+        this.name = name;
+        this.capacity = capacity;
+        this.railGauge = railGauge;
+        this.locomotives = new ArrayList<>();
+    }
+
+    public void addLocomotive(Locomotive locomotive) {
+        if (locomotives.size() >= capacity) {
+            System.out.println("This train station is full!");
+            return;
+        }
+        if (locomotive.getGauge() != railGauge) {
+            System.out.println("The rail gauge of this station does not match the locomotive gauge! Difference: "
+                    + Math.abs(railGauge - locomotive.getGauge()) + " mm.");
+            return;
+        }
+        locomotives.add(locomotive);
+    }
+
+    public boolean removeLocomotive(String name) {
+        return locomotives.removeIf(locomotive -> locomotive.getName().equals(name));
+    }
+
+    public String getFastestLocomotive() {
+        if (locomotives.isEmpty()) {
+            return "There are no locomotives.";
+        }
+        Locomotive fastest = locomotives.stream().max((a, b) -> Integer.compare(a.getMaxSpeed(), b.getMaxSpeed())).orElse(null);
+        return fastest.getName() + " is the fastest locomotive with a maximum speed of " + fastest.getMaxSpeed() + " km/h.";
+    }
+
+    public Locomotive getLocomotive(String name) {
+        return locomotives.stream().filter(locomotive -> locomotive.getName().equals(name)).findFirst().orElse(null);
+    }
+
+    public int getCount() {
+        return locomotives.size();
+    }
+
+    public String getOldestLocomotive() {
+        if (locomotives.isEmpty()) {
+            return "There are no locomotives.";
+        }
+        Locomotive oldest = locomotives.stream().min((a, b) -> a.getBuildDate().compareTo(b.getBuildDate())).orElse(null);
+        return oldest.getName();
+    }
+
+    public String getStatistics() {
+        if (locomotives.isEmpty()) {
+            return "There are no locomotives departing from " + name + " station.";
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("Locomotives departed from ").append(name).append(":\n");
+        for (int i = 0; i < locomotives.size(); i++) {
+            sb.append(i + 1).append(". ").append(locomotives.get(i).getName()).append("\n");
+        }
+        return sb.toString().trim();
+    }
+}
